@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class OrderService {
 
-    private final WebClient webClient; // uses for async web requests
+    private final WebClient.Builder webClientBuilder; // uses for async web requests
     private final OrderRepository orderRepository;
 
     public void placeOrder(OrderRequest orderRequest){
@@ -38,8 +38,8 @@ public class OrderService {
                 .toList();
 
         // Call inventory-service, and place order if product is in stock
-        InventoryResponse[] inventoryResponseArray = webClient.get() //get method because in InventoryController there is a GetMapping
-                .uri("http://localhost:8082/api/inventory",
+        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get() //get method because in InventoryController there is a GetMapping
+                .uri("http://inventory-service/api/inventory",
                   uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
